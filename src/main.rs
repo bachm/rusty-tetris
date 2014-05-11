@@ -19,7 +19,7 @@ fn start(argc: int, argv: **u8) -> int {
 }
 
 fn main() {
-	use piston::Game;
+	use piston::{AssetStore,Game};
 	
 	let game_window = piston::GameWindow::window("Rusty Tetris", 400, 800,
         piston::GameWindowSettings {
@@ -28,6 +28,7 @@ fn main() {
         }
     );
     
+    let mut assets = AssetStore::empty();
     let mut tetris = tetris::Tetris::new();
-    tetris.run(&game_window);
+    tetris.run(&game_window, &mut assets);
 }

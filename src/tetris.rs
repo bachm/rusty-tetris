@@ -108,9 +108,12 @@ impl Game for Tetris {
 			(Defeated, keyboard::F1)	=> self.play_again(),
 			(Playing, keyboard::E)		=> self.active_tetromino.try_rotate_right(&self.board),
 			(Playing, keyboard::Q)		=> self.active_tetromino.try_rotate_left(&self.board),
-			(Playing, keyboard::Left)	=> self.active_tetromino.try_move_left(&self.board),
-			(Playing, keyboard::Right)	=> self.active_tetromino.try_move_right(&self.board),
-			(Playing, keyboard::Down)	=> self.state = Dropping,
+			(Playing, keyboard::Left)
+            | (Playing, keyboard::A)	=> self.active_tetromino.try_move_left(&self.board),
+			(Playing, keyboard::Right)
+            | (Playing, keyboard::D)	=> self.active_tetromino.try_move_right(&self.board),
+			(Playing, keyboard::Down)
+            | (Playing, keyboard::S)	=> self.state = Dropping,
 			_ => {}
 		}
     }

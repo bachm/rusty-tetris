@@ -25,10 +25,11 @@ pub struct Tetris {
 	state: State,
 	block: Option<Texture>,
     paused: bool,
+    scale: f64,
 }
 
 impl Tetris {
-	pub fn new() -> Tetris {
+	pub fn new(scale: f64) -> Tetris {
 		Tetris {
 			gravity_accumulator: 0.0,
 			gravity_factor: 1.0,
@@ -38,6 +39,7 @@ impl Tetris {
 			state: Playing,
 			block: None,
             paused: false,
+            scale: scale,
 		}
 	}
 	fn gravity(&mut self, amount: f64) {
@@ -85,6 +87,7 @@ impl Game for Tetris {
         self.block = Some(Texture::from_path(&image).unwrap());
 	}
 	fn render(&self, c: &Context, args: RenderArgs) {
+        let c = c.zoom(self.scale);
 		fn pos(n: uint) -> f64 { n as f64 * TILE_SIZE }
 		for y in range(0u, BOARD_HEIGHT) {
 			for x in range(0u, BOARD_WIDTH) {

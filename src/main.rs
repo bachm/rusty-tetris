@@ -17,11 +17,14 @@ fn start(argc: int, argv: **u8) -> int {
 
 fn main() {
 	use piston::{AssetStore,GameWindow,GameWindowSettings,GameWindowSDL2,Game};
-	
+
+    let mini = true;
+    let (width, height) = (400, 800);
+    let (width, height) = if mini { (width / 2, height / 2) } else { (width, height) };	
 	let mut window: GameWindowSDL2 = GameWindow::new(
 		GameWindowSettings {
             title: "Rusty Tetris".to_string(),
-			size: [400, 800],
+			size: [width, height],
             fullscreen: false,
             exit_on_esc: true,
             background_color: [0.2, 0.2, 0.2, 0.2],
@@ -29,6 +32,6 @@ fn main() {
     );
 
 	let mut assets = AssetStore::from_folder("assets");
-	let mut app = tetris::Tetris::new();
+	let mut app = tetris::Tetris::new(if mini { 0.5 } else { 0.1 });
 	app.run(&mut window, &mut assets);
 }

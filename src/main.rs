@@ -32,6 +32,6 @@ fn main() {
     );
 
 	let mut assets = AssetStore::from_folder("assets");
-	let mut app = tetris::Tetris::new(if mini { 0.5 } else { 0.1 });
+	let mut app = tetris::Tetris::new(if mini { 0.5 } else { 1.0 });
 	app.run(&mut window, &mut assets);
 }

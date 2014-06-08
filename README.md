@@ -19,5 +19,5 @@ Dependencies:
 Installation:
 - Build piston-workspace according to instructions.
 - Run `git clone https://github.com/bachm/rusty-tetris.git`
-- Copy the contents of `/piston-workspace/piston-symlinks/` into `/rusty-tetris/target/cpu-vendor-os/lib/` (replace "cpu-vendor-os" your own, for example x86_64-unknown-linux-gnu)
+- Copy the contents of `/piston-workspace/piston-symlinks/` into `/rusty-tetris/target/cpu-vendor-os/lib/` (replace "cpu-vendor-os" with your own, for example x86_64-unknown-linux-gnu)
 - In the rusty-tetris folder, run `make exe`

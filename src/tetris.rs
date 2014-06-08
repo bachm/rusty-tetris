@@ -23,7 +23,8 @@ pub struct Tetris {
 	active_tetromino: ActiveTetromino,
 	board: [[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT],
 	state: State,
-	block: Option<Texture>
+	block: Option<Texture>,
+    paused: bool,
 }
 
 impl Tetris {
@@ -35,7 +36,8 @@ impl Tetris {
 			active_tetromino: ActiveTetromino::new(),
 			board: [[Default::default(),..BOARD_WIDTH],..BOARD_HEIGHT],
 			state: Playing,
-			block: None
+			block: None,
+            paused: false,
 		}
 	}
 	fn gravity(&mut self, amount: f64) {
@@ -94,6 +96,8 @@ impl Game for Tetris {
 		}
 	}
 	fn update(&mut self, args: UpdateArgs) {
+        if self.paused { return }
+
 		match self.state {
 			Playing		=> self.gravity(args.dt),
 			Dropping	=> self.gravity(0.12 + args.dt),
@@ -103,14 +107,18 @@ impl Game for Tetris {
 	fn key_press(&mut self, args: KeyPressArgs) {
 		match (self.state, args.key) {
 			(Defeated, keyboard::F1)	=> self.play_again(),
-			(Playing, keyboard::E)		=> self.active_tetromino.try_rotate_right(&self.board),
-			(Playing, keyboard::Q)		=> self.active_tetromino.try_rotate_left(&self.board),
-			(Playing, keyboard::A) | (Playing, keyboard::Left)
+			(Playing, keyboard::E) if !self.paused		
+                => self.active_tetromino.try_rotate_right(&self.board),
+			(Playing, keyboard::Q) if !self.paused		
+                => self.active_tetromino.try_rotate_left(&self.board),
+			(Playing, keyboard::A) | (Playing, keyboard::Left) if !self.paused
 				=> self.active_tetromino.try_move_left(&self.board),
-			(Playing, keyboard::D) | (Playing, keyboard::Right)
+			(Playing, keyboard::D) | (Playing, keyboard::Right) if !self.paused
 				=> self.active_tetromino.try_move_right(&self.board),
-			(Playing, keyboard::Down) | (Playing, keyboard::S)
+			(Playing, keyboard::Down) | (Playing, keyboard::S) if !self.paused
 				=> self.state = Dropping,
+            (Playing, keyboard::P)
+                => self.paused = !self.paused,
 			_ => {}
 		}
     }

@@ -18,7 +18,7 @@ fn start(argc: int, argv: **u8) -> int {
 fn main() {
 	use piston::{AssetStore,GameWindow,GameWindowSettings,GameWindowSDL2,Game};
 
-    let mini = true;
+    let mini = false;
     let (width, height) = (400, 800);
     let (width, height) = if mini { (width / 2, height / 2) } else { (width, height) };	
 	let mut window: GameWindowSDL2 = GameWindow::new(

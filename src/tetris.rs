@@ -1,118 +1,114 @@
 use std::default::Default;
-use glfw;
-use piston::{Gl,Game,AssetStore};
 use graphics::*;
-use piece::Polyomino;
-use shape::Color;
+use piston::{AssetStore,Game,RenderArgs,Texture,KeyPressArgs,UpdateArgs,};
+use piston::keyboard;
+use active::ActiveTetromino;
+use tetromino::Color;
 
 pub static BOARD_WIDTH: uint = 10;
 pub static BOARD_HEIGHT: uint = 20;
+static TILE_SIZE: f64 = 40.0;
 
-static PADDING: f64 = 12.0;
-static TILE_SPACING: f64 = 3.0;
-static TILE_WIDTH: f64 = (400.0 - PADDING * 2.0 + TILE_SPACING) / BOARD_WIDTH as f64;
-static TILE_HEIGHT: f64 = (800.0 - PADDING * 2.0 + TILE_SPACING) / BOARD_HEIGHT as f64;
-static RECT_WIDTH: f64 = TILE_WIDTH - TILE_SPACING;
-static RECT_HEIGHT: f64 = TILE_HEIGHT - TILE_SPACING;
-
-#[deriving(Eq)]
+#[deriving(PartialEq)]
 enum State {
-	//Intro,
 	Playing,
-	Defeat
+	Dropping,
+	Defeated
 }
 
 pub struct Tetris {
-	gravity_limit: f64,
-	gravity_acc: f64,
-	piece: Polyomino,
+	gravity_accumulator: f64,
+	gravity_factor: f64,
+	tetromino_count: uint,
+	active_tetromino: ActiveTetromino,
 	board: [[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT],
-	state: State
+	state: State,
+	block: Option<Texture>
 }
 
 impl Tetris {
 	pub fn new() -> Tetris {
 		Tetris {
-			gravity_limit: 0.3,
-			gravity_acc: 0.0,
-			piece: Polyomino::new(), 
+			gravity_accumulator: 0.0,
+			gravity_factor: 1.0,
+			tetromino_count: 0,
+			active_tetromino: ActiveTetromino::new(),
 			board: [[Default::default(),..BOARD_WIDTH],..BOARD_HEIGHT],
-			state: Playing
+			state: Playing,
+			block: None
 		}
 	}
-	fn release_piece(&mut self) {
-		for &(x,y) in self.piece.as_points().iter() {
-			if y < self.board.len() && x < self.board[y].len() {
-				self.board[y][x] = Some(self.piece.get_color());
-			} else {
-				self.state = Defeat;
+	fn gravity(&mut self, amount: f64) {
+		self.gravity_accumulator += amount * self.gravity_factor;
+		if self.gravity_accumulator >= 0.35 {
+			self.gravity_accumulator = 0.0;
+			if ! self.active_tetromino.try_move_down(&self.board) {
+				for &(x,y) in self.active_tetromino.as_points().iter() {
+					if y < self.board.len() && x < self.board[y].len() {
+						self.board[y][x] = Some(self.active_tetromino.get_color());
+					} else {
+						self.state = Defeated;
+					}
+				}
+				if self.state == Playing || self.state == Dropping {
+					self.state = Playing;
+					let mut board: [[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT] = [[None,..BOARD_WIDTH],..BOARD_HEIGHT];
+					for (new,old) in board.mut_iter().rev().zip(self.board.iter().rev().filter(|row| row.iter().any(|color| color.is_none()))) {
+						*new = *old.clone();
+					}
+					self.board = board;
+					self.active_tetromino = ActiveTetromino::new();
+					self.tetromino_count += 1;
+					if self.tetromino_count >= 10 {
+						self.tetromino_count = 0;
+						self.gravity_factor += 1.1;
+					}
+				}
 			}
 		}
-		if self.state == Playing {
-			let mut board: [[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT] = [[None,..BOARD_WIDTH],..BOARD_HEIGHT];
-			for (new,old) in board.mut_iter().rev().zip(self.board.iter().rev().filter(|row| row.iter().any(|color| color.is_none()))) {
-				*new = *old.clone();
-			}
-			self.board = board;
-			self.piece = Polyomino::new();
-		} else {
-			println!("Defeat");
-		}
+	}
+	fn play_again(&mut self) {
+		self.state = Playing;
+		self.gravity_accumulator = 0.0;
+		self.tetromino_count = 0;
+		self.gravity_factor = 1.0;
+		self.board = [[Default::default(),..BOARD_WIDTH],..BOARD_HEIGHT];
+		self.active_tetromino = ActiveTetromino::new();
 	}
 }
 
 impl Game for Tetris {
-	fn render(&self, context: &Context, gl: &mut Gl) {
-		fn render_tile(context: &Context, gl: &mut Gl, x: uint, y: uint, color: [f32,..4]) {
-			context.view()
-				.rect(x as f64 * TILE_WIDTH + PADDING, y as f64 * TILE_HEIGHT + PADDING, RECT_WIDTH, RECT_HEIGHT)
-				.color(color)
-				.fill(gl)
-		};
+	fn load(&mut self, assets: &mut AssetStore) {
+		let image = assets.path("block.png").unwrap();
+        self.block = Some(Texture::from_path(&image).unwrap());
+	}
+	fn render(&self, c: &Context, args: RenderArgs) {
+		fn pos(n: uint) -> f64 { n as f64 * TILE_SIZE }
 		for y in range(0u, BOARD_HEIGHT) {
 			for x in range(0u, BOARD_WIDTH) {
-				self.board[y][x].map(|e| render_tile(context, gl, x, y, e.as_RGBA()));
+				self.board[y][x].as_ref().map(|e| c.trans(pos(x), pos(y)).image(self.block.as_ref().unwrap()).color(e.as_rgba()).draw(args.gl));
 			}
 		}
-		for &(x,y) in self.piece.as_points().iter() {
-			render_tile(context, gl, x, y, self.piece.get_color().as_RGBA());
-		}
-		match self.state {
-			Playing => {
-				
-			}
-			Defeat => {
-				
-			}
+		for &(x,y) in self.active_tetromino.as_points().iter() {
+			c.trans(pos(x), pos(y)).image(self.block.as_ref().unwrap()).color(self.active_tetromino.get_color().as_rgba()).draw(args.gl);
 		}
 	}
-	fn update(&mut self, dt: f64, _asset_store: &mut AssetStore) {
-		if self.state == Playing {
-			self.gravity_acc += dt;
-			if self.gravity_acc > self.gravity_limit {
-				self.gravity_acc -= self.gravity_limit;
-				if ! self.piece.try_move_down(&self.board) {
-					self.release_piece();
-				}
-			}
-		}
-		
-	
-	}
-	fn key_press(&mut self, key: glfw::Key, _: &mut AssetStore) {
+	fn update(&mut self, args: UpdateArgs) {
 		match self.state {
-			Playing => match key {
-				glfw::KeyRight => self.piece.try_move_right(&self.board),
-				glfw::KeyLeft => self.piece.try_move_left(&self.board),
-				glfw::KeyUp => self.piece.try_move_up(&self.board),
-				glfw::KeyDown => { 
-					self.piece.try_move_down(&self.board);
-				},
-				glfw::KeyE => self.piece.try_rotate_right(&self.board),
-				glfw::KeyQ => self.piece.try_rotate_left(&self.board),
-				_ => {},
-			},
-			_ => ()
+			Playing		=> self.gravity(args.dt),
+			Dropping	=> self.gravity(0.12 + args.dt),
+			_ => {}
+		}
+	}
+	fn key_press(&mut self, args: KeyPressArgs) {
+		match (self.state, args.key) {
+			(Defeated, keyboard::F1)	=> self.play_again(),
+			(Playing, keyboard::E)		=> self.active_tetromino.try_rotate_right(&self.board),
+			(Playing, keyboard::Q)		=> self.active_tetromino.try_rotate_left(&self.board),
+			(Playing, keyboard::Left)	=> self.active_tetromino.try_move_left(&self.board),
+			(Playing, keyboard::Right)	=> self.active_tetromino.try_move_right(&self.board),
+			(Playing, keyboard::Down)	=> self.state = Dropping,
+			_ => {}
 		}
     }
 }

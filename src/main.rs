@@ -5,30 +5,30 @@ extern crate graphics;
 extern crate piston;
 extern crate rand;
 extern crate native;
-extern crate glfw;
-extern crate opengles;
 
 mod tetris;
-mod piece;
-mod shape;
+mod active;
+mod tetromino;
 
 #[start]
 fn start(argc: int, argv: **u8) -> int {
-    // Run GLFW on the main thread.
     native::start(argc, argv, main)
 }
 
 fn main() {
-	use piston::{AssetStore,Game};
+	use piston::{AssetStore,GameWindow,GameWindowSettings,GameWindowSDL2,Game};
 	
-	let game_window = piston::GameWindow::window("Rusty Tetris", 400, 800,
-        piston::GameWindowSettings {
+	let mut window: GameWindowSDL2 = GameWindow::new(
+        GameWindowSettings {
+            title: "Rusty Tetris".to_string(),
+			size: [400, 800],
+            fullscreen: false,
             exit_on_esc: true,
-            background_color: [0.2, 0.2, 0.2, 1.0],
+            background_color: [0.2, 0.2, 0.2, 0.2],
         }
     );
-    
-    let mut assets = AssetStore::empty();
-    let mut tetris = tetris::Tetris::new();
-    tetris.run(&game_window, &mut assets);
+
+    let mut assets = AssetStore::from_folder("assets");
+    let mut app = tetris::Tetris::new();
+    app.run(&mut window, &mut assets);
 }

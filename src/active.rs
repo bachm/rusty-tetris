@@ -1,19 +1,24 @@
 use tetris::{BOARD_WIDTH,BOARD_HEIGHT};
-use rand::{Rand,Rng,task_rng};
-use shape::{Shape,SHAPES,Color,Rotation,R0};
+use std::rand::{Rng,task_rng};
+use tetromino::{Tetromino,SHAPES,Color,Rotation,R0};
 
 static HIDDEN_ROWS: [uint,..3] = [-3, -2,-1];
 
-pub struct Polyomino {
+pub struct ActiveTetromino {
 	x: uint,
 	y: uint,
 	rotation: Rotation,
-	shape: &'static Shape
+	shape: &'static Tetromino
 }
 
-impl Polyomino {
-	pub fn new() -> Polyomino {
-		Polyomino { x: BOARD_WIDTH / 2 - 2, y: HIDDEN_ROWS[0], rotation: R0, shape: task_rng().choose_option(SHAPES).unwrap() }
+impl ActiveTetromino {
+	pub fn new() -> ActiveTetromino {
+		ActiveTetromino { 
+			x: BOARD_WIDTH / 2 - 2, 
+			y: HIDDEN_ROWS[0], 
+			rotation: R0, 
+			shape: task_rng().choose(SHAPES).unwrap()
+		}
 	}
 	
 	pub fn as_points(&self) -> Vec<(uint,uint)> {
@@ -22,10 +27,6 @@ impl Polyomino {
 	
 	pub fn get_color(&self) -> Color {
 		self.shape.get_color()
-	}
-	
-	pub fn is_outside_board(&self) -> bool {
-		self.shape.points(self.rotation).iter().any(|&(_,y1)| HIDDEN_ROWS.iter().any(|&y2| y1 == y2))
 	}
 
 	pub fn try_rotate_right(&mut self, board: &[[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT]) {
@@ -61,12 +62,6 @@ impl Polyomino {
 		} else {
 			false
 		}
-	}
-	
-	pub fn try_move_up(&mut self, board: &[[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT]) {
-		if self.is_move_allowed(self.x, self.y - 1, self.rotation, board) { 
-			self.y -= 1;
-		};
 	}
 	
 	fn is_move_allowed(&mut self, x2: uint, y2: uint, rotation: Rotation, board: &[[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT]) -> bool {

@@ -1,40 +1,40 @@
-pub static SHAPES: [Shape,..7] = [
-	Shape {
+pub static SHAPES: [Tetromino,..7] = [
+	Tetromino {
 		color: Cyan,
 		points: [[(0,2),(1,2),(2,2),(3,2)],[(2,0),(2,1),(2,2),(2,3)],[(0,2),(1,2),(2,2),(3,2)],[(2,0),(2,1),(2,2),(2,3)]]
 	},
-	Shape {
+	Tetromino {
 		color: Blue,
 		points: [[(0,1),(1,1),(2,1),(2,2)],[(1,0),(1,1),(0,2),(1,2)],[(0,0),(0,1),(1,1),(2,1)],[(1,0),(2,0),(1,1),(1,2)]]
 	},
-	Shape {
+	Tetromino {
 		color: Orange,
 		points: [[(0,1),(1,1),(2,1),(0,2)],[(0,0),(1,0),(1,1),(1,2)],[(2,0),(0,1),(1,1),(2,1)],[(1,0),(1,1),(1,2),(2,2)]]
 	},
-	Shape {
+	Tetromino {
 		color: Yellow,
 		points: [[(1,1),(2,1),(1,2),(2,2)],[(1,1),(2,1),(1,2),(2,2)],[(1,1),(2,1),(1,2),(2,2)],[(1,1),(2,1),(1,2),(2,2)]]
 	},
-	Shape {
+	Tetromino {
 		color: Lime,
 		points: [[(1,1),(2,1),(0,2),(1,2)],[(1,0),(1,1),(2,1),(2,2)],[(1,1),(2,1),(0,2),(1,2)],[(1,0),(1,1),(2,1),(2,2)]]
 	},
-	Shape {
+	Tetromino {
 		color: Purple,
 		points: [[(0,1),(1,1),(2,1),(1,2)],[(1,0),(0,1),(1,1),(1,2)],[(1,0),(0,1),(1,1),(2,1)],[(1,0),(1,1),(2,1),(1,2)]]
 	},
-	Shape {
+	Tetromino {
 		color: Red,
 		points: [[(0,1),(1,1),(1,2),(2,2)],[(2,0),(1,1),(2,1),(1,2)],[(0,1),(1,1),(1,2),(2,2)],[(2,0),(1,1),(2,1),(1,2)]]
 	}
 ];
 
-pub struct Shape {
-	color: Color,  
+pub struct Tetromino {
+	color: Color,
 	points: [[(uint,uint),..4],..4]
 }
 
-impl Shape {
+impl Tetromino {
 	pub fn points(&'static self, rotation: Rotation) -> &'static [(uint,uint),..4] {
 		&self.points[rotation as uint]
 	}
@@ -67,10 +67,10 @@ impl Rotation {
 pub enum Color { Cyan, Blue, Orange, Yellow, Lime, Purple, Red }
 
 impl Color {
-	pub fn as_RGBA(&self) -> [f32,..4] {
+	pub fn as_rgba(&self) -> [f32,..4] {
 		match *self {
 			Cyan	=> [0.0, 1.0, 1.0, 1.0],
-			Blue	=> [0.0, 0.2, 1.0, 1.0],
+			Blue	=> [0.0, 0.5, 1.0, 1.0],
 			Orange	=> [1.0, 0.6, 0.0, 1.0],
 			Yellow	=> [1.0, 1.0, 0.0, 1.0],
 			Lime	=> [0.5, 1.0, 0.0, 1.0],

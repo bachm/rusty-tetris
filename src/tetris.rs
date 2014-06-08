@@ -24,11 +24,11 @@ pub struct Tetris {
 	board: [[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT],
 	state: State,
 	block: Option<Texture>,
-    paused: bool,
+    scale: f64,
 }
 
 impl Tetris {
-	pub fn new() -> Tetris {
+	pub fn new(scale: f64) -> Tetris {
 		Tetris {
 			gravity_accumulator: 0.0,
 			gravity_factor: 1.0,
@@ -37,7 +37,7 @@ impl Tetris {
 			board: [[Default::default(),..BOARD_WIDTH],..BOARD_HEIGHT],
 			state: Playing,
 			block: None,
-            paused: false,
+            scale: scale,
 		}
 	}
 	fn gravity(&mut self, amount: f64) {
@@ -85,6 +85,7 @@ impl Game for Tetris {
         self.block = Some(Texture::from_path(&image).unwrap());
 	}
 	fn render(&self, c: &Context, args: RenderArgs) {
+        let c = c.zoom(self.scale);
 		fn pos(n: uint) -> f64 { n as f64 * TILE_SIZE }
 		for y in range(0u, BOARD_HEIGHT) {
 			for x in range(0u, BOARD_WIDTH) {
@@ -96,8 +97,6 @@ impl Game for Tetris {
 		}
 	}
 	fn update(&mut self, args: UpdateArgs) {
-        if self.paused { return }
-
 		match self.state {
 			Playing		=> self.gravity(args.dt),
 			Dropping	=> self.gravity(0.12 + args.dt),
@@ -107,18 +106,14 @@ impl Game for Tetris {
 	fn key_press(&mut self, args: KeyPressArgs) {
 		match (self.state, args.key) {
 			(Defeated, keyboard::F1)	=> self.play_again(),
-			(Playing, keyboard::E) if !self.paused		
-                => self.active_tetromino.try_rotate_right(&self.board),
-			(Playing, keyboard::Q) if !self.paused		
-                => self.active_tetromino.try_rotate_left(&self.board),
-			(Playing, keyboard::A) | (Playing, keyboard::Left) if !self.paused
-				=> self.active_tetromino.try_move_left(&self.board),
-			(Playing, keyboard::D) | (Playing, keyboard::Right) if !self.paused
-				=> self.active_tetromino.try_move_right(&self.board),
-			(Playing, keyboard::Down) | (Playing, keyboard::S) if !self.paused
-				=> self.state = Dropping,
-            (Playing, keyboard::P)
-                => self.paused = !self.paused,
+			(Playing, keyboard::E)		=> self.active_tetromino.try_rotate_right(&self.board),
+			(Playing, keyboard::Q)		=> self.active_tetromino.try_rotate_left(&self.board),
+			(Playing, keyboard::Left)
+            | (Playing, keyboard::A)	=> self.active_tetromino.try_move_left(&self.board),
+			(Playing, keyboard::Right)
+            | (Playing, keyboard::D)	=> self.active_tetromino.try_move_right(&self.board),
+			(Playing, keyboard::Down)
+            | (Playing, keyboard::S)	=> self.state = Dropping,
 			_ => {}
 		}
     }

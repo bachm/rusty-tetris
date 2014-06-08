@@ -23,11 +23,12 @@ pub struct Tetris {
 	active_tetromino: ActiveTetromino,
 	board: [[Option<Color>,..BOARD_WIDTH],..BOARD_HEIGHT],
 	state: State,
-	block: Option<Texture>
+	block: Option<Texture>,
+    scale: f64,
 }
 
 impl Tetris {
-	pub fn new() -> Tetris {
+	pub fn new(scale: f64) -> Tetris {
 		Tetris {
 			gravity_accumulator: 0.0,
 			gravity_factor: 1.0,
@@ -35,7 +36,8 @@ impl Tetris {
 			active_tetromino: ActiveTetromino::new(),
 			board: [[Default::default(),..BOARD_WIDTH],..BOARD_HEIGHT],
 			state: Playing,
-			block: None
+			block: None,
+            scale: scale,
 		}
 	}
 	fn gravity(&mut self, amount: f64) {
@@ -83,6 +85,7 @@ impl Game for Tetris {
         self.block = Some(Texture::from_path(&image).unwrap());
 	}
 	fn render(&self, c: &Context, args: RenderArgs) {
+        let c = c.zoom(self.scale);
 		fn pos(n: uint) -> f64 { n as f64 * TILE_SIZE }
 		for y in range(0u, BOARD_HEIGHT) {
 			for x in range(0u, BOARD_WIDTH) {

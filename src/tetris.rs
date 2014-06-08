@@ -61,7 +61,7 @@ impl Tetris {
 					self.tetromino_count += 1;
 					if self.tetromino_count >= 10 {
 						self.tetromino_count = 0;
-						self.gravity_factor += 1.1;
+						self.gravity_factor *= 1.1;
 					}
 				}
 			}

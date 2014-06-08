@@ -19,7 +19,7 @@ fn main() {
 	use piston::{AssetStore,GameWindow,GameWindowSettings,GameWindowSDL2,Game};
 	
 	let mut window: GameWindowSDL2 = GameWindow::new(
-        GameWindowSettings {
+		GameWindowSettings {
             title: "Rusty Tetris".to_string(),
 			size: [400, 800],
             fullscreen: false,
@@ -28,7 +28,7 @@ fn main() {
         }
     );
 
-    let mut assets = AssetStore::from_folder("assets");
-    let mut app = tetris::Tetris::new();
-    app.run(&mut window, &mut assets);
+	let mut assets = AssetStore::from_folder("assets");
+	let mut app = tetris::Tetris::new();
+	app.run(&mut window, &mut assets);
 }

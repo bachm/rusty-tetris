@@ -1,10 +1,10 @@
 [package]
 name = "rusty-tetris"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
-    "bachm"
+    "bachm",
     "bvssvni <bvssvni@gmail.com>",
-    "phideg"
+    "phideg <deglerp@googlemail.com>"
 ]
 keywords = ["tetris", "board game"]
 

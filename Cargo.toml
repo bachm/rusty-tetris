@@ -14,9 +14,6 @@ git = "https://github.com/pistondevelopers/sdl2_window"
 [dependencies.piston]
 git = "https://github.com/pistondevelopers/piston"
 
-[dependencies.piston2d-sprite]
-git = "https://github.com/pistondevelopers/sprite"
-
 [dependencies.piston2d-graphics]
 git = "https://github.com/pistondevelopers/graphics"
 

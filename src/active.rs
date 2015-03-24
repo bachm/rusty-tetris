@@ -47,7 +47,7 @@ impl ActiveTetromino {
 
     pub fn try_move_right(&mut self, board: &[[Option<Color>; BOARD_WIDTH]; BOARD_HEIGHT]) {
         if self.is_move_allowed(self.x.wrapping_add(1), self.y, self.rotation, board) {
-            self.x.wrapping_add(1);
+            self.x = self.x.wrapping_add(1);
         };
     }
 

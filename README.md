@@ -16,7 +16,7 @@ The fall speed increases every 10 tetrominoes.
 
 ## How to build & run
 
-To build the examples, you need the latest Rust nightly and Cargo installed.
+You need the latest Rust nightly and Cargo installed.
 
 1. Install [Cargo](https://github.com/rust-lang/cargo)
 2. Run `git clone https://github.com/bachm/rusty-tetris.git`

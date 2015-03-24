@@ -14,7 +14,7 @@ The fall speed increases every 10 tetrominoes.
 - F1 => restart after losing
 
 
-## How to build & run examples
+## How to build & run
 
 To build the examples, you need the latest Rust nightly and Cargo installed.
 

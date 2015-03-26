@@ -1,5 +1,4 @@
 #![feature(core)]
-#![feature(old_path)]
 extern crate rand;
 extern crate piston;
 extern crate graphics;

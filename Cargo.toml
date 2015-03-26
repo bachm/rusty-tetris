@@ -9,7 +9,7 @@ authors = [
 keywords = ["tetris", "board game"]
 
 [[bin]]
-name = "rusty-tetris"
+name = "rusty_tetris"
 path = "src/main.rs"
 
 [dependencies.pistoncore-sdl2_window]

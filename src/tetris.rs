@@ -1,4 +1,4 @@
-use std::old_path::*;
+use std::path::Path;
 use std::default::Default;
 use graphics::{ Context, RelativeTransform, Image, default_draw_state };
 use opengl_graphics::{ GlGraphics, Texture };
@@ -36,7 +36,7 @@ impl Tetris {
     pub fn new(scale: f64) -> Tetris {
         Tetris {
             gravity_accumulator: 0.0,
-            gravity_factor: 1.0,
+            gravity_factor: 0.5,
             tetromino_count: 0,
             active_tetromino: ActiveTetromino::new(),
             board: [[Default::default(); BOARD_WIDTH]; BOARD_HEIGHT],
@@ -81,7 +81,7 @@ impl Tetris {
         self.state = Playing;
         self.gravity_accumulator = 0.0;
         self.tetromino_count = 0;
-        self.gravity_factor = 1.0;
+        self.gravity_factor = 0.5;
         self.board = [[Default::default(); BOARD_WIDTH]; BOARD_HEIGHT];
         self.active_tetromino = ActiveTetromino::new();
     }

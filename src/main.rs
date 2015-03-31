@@ -5,6 +5,7 @@ extern crate graphics;
 extern crate sdl2_window;
 extern crate opengl_graphics;
 
+use std::rc::Rc;
 use std::cell::RefCell;
 use opengl_graphics::{ GlGraphics, OpenGL };
 use sdl2_window::Sdl2Window;
@@ -31,8 +32,8 @@ fn main() {
 
     let mut game = tetris::Tetris::new(if mini { 0.5 } else { 1.0 });
     let ref mut gl = GlGraphics::new(opengl);
-    let window = RefCell::new(window);
-    for e in piston::events(&window) {
+    let window = Rc::new(RefCell::new(window));
+    for e in piston::events(window) {
         use piston::event::{ PressEvent, RenderEvent, UpdateEvent };
         use piston::input::Button;
 

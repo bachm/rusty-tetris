@@ -6,7 +6,6 @@ authors = [
     "bvssvni <bvssvni@gmail.com>",
     "phideg <deglerp@googlemail.com>"
 ]
-keywords = ["tetris", "board game"]
 
 [[bin]]
 name = "rusty_tetris"

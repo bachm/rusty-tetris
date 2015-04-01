@@ -1,4 +1,3 @@
-#![feature(core)]
 extern crate rand;
 extern crate piston;
 extern crate graphics;

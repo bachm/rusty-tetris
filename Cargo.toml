@@ -1,0 +1,27 @@
+[package]
+name = "rusty-tetris"
+version = "0.0.2"
+authors = [
+    "bachm",
+    "bvssvni <bvssvni@gmail.com>",
+    "phideg <deglerp@googlemail.com>"
+]
+
+[[bin]]
+name = "rusty_tetris"
+path = "src/main.rs"
+
+[dependencies.pistoncore-sdl2_window]
+git = "https://github.com/pistondevelopers/sdl2_window"
+
+[dependencies.piston]
+git = "https://github.com/pistondevelopers/piston"
+
+[dependencies.piston2d-graphics]
+git = "https://github.com/pistondevelopers/graphics"
+
+[dependencies.piston2d-opengl_graphics]
+git = "https://github.com/pistondevelopers/opengl_graphics"
+
+[dependencies.rand]
+git = "https://github.com/rust-lang/rand"
